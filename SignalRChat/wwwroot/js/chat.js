@@ -6,11 +6,30 @@ document.getElementById("sendButton").disabled = true;
 
 connection.on("ReceiveMessage", function (user, message) {
     var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    var encodedMsg = user + " says " + msg;
+    getLocation();
     var li = document.createElement("li");
+   
+    var encodedMsg =  user + " says " + msg + " | Sent from ";
     li.textContent = encodedMsg;
+    
+
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition);
+        } else {
+            li.textContent += "Geolocation is not supported by this browser.";
+        }
+    }
+
+    function showPosition(position) {
+        
+        li.textContent += "Lat: " + position.coords.latitude +
+            " Lon: " + position.coords.longitude;
+    }
+
     document.getElementById("messagesList").appendChild(li);
 });
+
 
 connection.start().then(function () {
     document.getElementById("sendButton").disabled = false;
@@ -26,3 +45,4 @@ document.getElementById("sendButton").addEventListener("click", function (event)
     });
     event.preventDefault();
 });
+
